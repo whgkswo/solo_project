@@ -70,7 +70,7 @@ public class QuestionController {
     @GetMapping
     public ResponseEntity getQuestions(@Positive @RequestParam int page,
                                        @Positive @RequestParam int size,
-                                       @RequestParam SortType sortType ){
+                                       @RequestParam String sortType ){
         Page<Question> pageQuestions = questionService.findQuestions(page-1, size, sortType);
         List<Question> questions = pageQuestions.getContent();
 
@@ -84,12 +84,5 @@ public class QuestionController {
     ){
         questionService.deleteQuestion(questionId, authentication);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
-    }
-    public enum SortType{
-        VIEWS_ASCENDING,
-        VIEWS_DESCENDING,
-        LIKES_ASCENDING,
-        LIKES_DESCENDING
-        ;
     }
 }

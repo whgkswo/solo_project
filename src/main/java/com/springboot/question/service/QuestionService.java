@@ -112,21 +112,21 @@ public class QuestionService {
         question.setViews(question.getViews() + 1);
         return questionRepository.save(question);
     }
-    public Page<Question> findQuestions(int page, int size, QuestionController.SortType sortType){
+    public Page<Question> findQuestions(int page, int size, String sortType){
         switch (sortType){
-            case VIEWS_ASCENDING:
+            case "VIEWS_ASCENDING":
                 return new PageImpl<>(questionRepository.findAll(PageRequest.of(page, size, Sort.by("views"))).stream()
                         .filter(question -> question.getQuestionStatus() != Question.QuestionStatus.QUESTION_DELETED)
                         .collect(Collectors.toList()));
-            case VIEWS_DESCENDING:
+            case "VIEWS_DESCENDING":
                 return new PageImpl<>(questionRepository.findAll(PageRequest.of(page, size, Sort.by("views").descending())).stream()
                         .filter(question -> question.getQuestionStatus() != Question.QuestionStatus.QUESTION_DELETED)
                         .collect(Collectors.toList()));
-            case LIKES_ASCENDING:
+            case "LIKES_ASCENDING":
                 return new PageImpl<>(questionRepository.findAll(PageRequest.of(page, size, Sort.by("likes").descending())).stream()
                         .filter(question -> question.getQuestionStatus() != Question.QuestionStatus.QUESTION_DELETED)
                         .collect(Collectors.toList()));
-            case LIKES_DESCENDING:
+            case "LIKES_DESCENDING":
                 return new PageImpl<>(questionRepository.findAll(PageRequest.of(page, size, Sort.by("likes"))).stream()
                         .filter(question -> question.getQuestionStatus() != Question.QuestionStatus.QUESTION_DELETED)
                         .collect(Collectors.toList()));
