@@ -4,6 +4,8 @@ import com.springboot.answer.entity.Answer;
 import com.springboot.answer.repository.AnswerRepository;
 import com.springboot.exception.BusinessLogicException;
 import com.springboot.exception.ExceptionCode;
+import com.springboot.member.entity.Member;
+import com.springboot.member.service.MemberService;
 import com.springboot.question.entity.Question;
 import com.springboot.question.repository.QuestionRepository;
 import com.springboot.question.service.QuestionService;
@@ -24,13 +26,18 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private final QuestionService questionService;
     private final QuestionRepository questionRepository;
+    private final MemberService memberService;
 
-    public AnswerService(AnswerRepository answerRepository, QuestionService questionService, QuestionRepository questionRepository) {
+    public AnswerService(AnswerRepository answerRepository, QuestionService questionService, QuestionRepository questionRepository, MemberService memberService) {
         this.answerRepository = answerRepository;
         this.questionService = questionService;
         this.questionRepository = questionRepository;
+        this.memberService = memberService;
     }
-    public Answer createAnswer(Answer answer){
+    public Answer createAnswer(Answer answer, Authentication authentication){
+        Member member = memberService.findMember(authentication.getPrincipal().toString());
+        answer.setAuthor(member);
+
         Question question = questionService.findVerifiedQuestion(answer.getQuestion().getQuestionId());
 
         // 답변은 하나만

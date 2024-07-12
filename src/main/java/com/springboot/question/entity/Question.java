@@ -30,6 +30,7 @@ public class Question {
     private String content;
 
     @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
     private QuestionStatus questionStatus = QuestionStatus.QUESTION_REGISTERED;
 
     @Column(nullable = false)

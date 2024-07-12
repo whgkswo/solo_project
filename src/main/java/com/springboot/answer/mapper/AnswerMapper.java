@@ -16,11 +16,8 @@ public interface AnswerMapper {
         Answer answer = new Answer();
         Question question = new Question();
         question.setQuestionId(answerPostDto.getQuestionId());
-        Member member = new Member();
-        member.setMemberId(answerPostDto.getAuthorId());
 
         answer.setQuestion(question);
-        answer.setAuthor(member);
         answer.setContent(answerPostDto.getContent());
         return answer;
     };

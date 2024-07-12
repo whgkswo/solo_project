@@ -14,9 +14,6 @@ public class AnswerDto {
         @NotNull
         private long questionId;
 
-        @NotNull
-        private long authorId;
-
         @NotSpace(message = "내용은 공백이 아니어야 합니다.")
         private String content;
     }
