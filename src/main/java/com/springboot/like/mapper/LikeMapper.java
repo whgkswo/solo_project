@@ -12,10 +12,6 @@ public interface LikeMapper {
     default Like likePostToLike(LikeDto.Post likePostDto){
         Like like = new Like();
 
-        Member member = new Member();
-        member.setMemberId(likePostDto.getMemberId());
-        like.setMember(member);
-
         Question question = new Question();
         question.setQuestionId(likePostDto.getQuestionId());
         like.setQuestion(question);

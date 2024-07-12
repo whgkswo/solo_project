@@ -7,6 +7,7 @@ import com.springboot.like.service.LikeService;
 import com.springboot.utils.UriCreator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,8 +29,9 @@ public class LikeController {
     }
 
     @PostMapping
-    public ResponseEntity postLike(@Valid @RequestBody LikeDto.Post likePostDto){
-        Like like = likeService.createLike(mapper.likePostToLike(likePostDto));
+    public ResponseEntity postLike(@Valid @RequestBody LikeDto.Post likePostDto,
+                                   Authentication authentication){
+        Like like = likeService.createLike(mapper.likePostToLike(likePostDto), authentication);
 
         URI location = UriCreator.createUri(LIKE_DEFAULT_URL, like.getLikeId());
         return ResponseEntity.created(location).build();

@@ -9,8 +9,5 @@ public class LikeDto {
     public static class Post{
         @NotNull
         private long questionId;
-
-        @NotNull
-        private long memberId;
     }
 }

@@ -33,6 +33,7 @@ public class Question {
     private QuestionStatus questionStatus = QuestionStatus.QUESTION_REGISTERED;
 
     @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
     private Publicity publicity;
 
     @Column(nullable = false)
