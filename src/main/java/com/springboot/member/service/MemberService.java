@@ -1,34 +1,49 @@
 package com.springboot.member.service;
 
+import com.springboot.auth.utils.CustomAuthorityUtils;
 import com.springboot.exception.BusinessLogicException;
 import com.springboot.exception.ExceptionCode;
+import com.springboot.helper.event.MemberRegistrationApplicationEvent;
 import com.springboot.member.entity.Member;
 import com.springboot.member.repository.MemberRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Transactional
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final ApplicationEventPublisher publisher;
+    private final PasswordEncoder passwordEncoder;
+    private final CustomAuthorityUtils customAuthorityUtils;
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, ApplicationEventPublisher publisher, PasswordEncoder passwordEncoder, CustomAuthorityUtils customAuthorityUtils) {
         this.memberRepository = memberRepository;
+        this.publisher = publisher;
+        this.passwordEncoder = passwordEncoder;
+        this.customAuthorityUtils = customAuthorityUtils;
     }
     public Member createMember(Member member){
         verifyExistsEmail(member.getEmail());
-        if (member.getEmail().equals("admin@gmail.com")){
-            member.getRoles().add(Member.Role.ADMIN);
-        }
-        member.getRoles().add(Member.Role.USER);
-        return memberRepository.save(member);
+
+        String encryptedPassword = passwordEncoder.encode(member.getPassword());
+        member.setPassword(encryptedPassword);
+
+        List<String> roles = customAuthorityUtils.createRoles(member.getEmail());
+        member.setRoles(roles);
+        Member savedMember = memberRepository.save(member);
+
+        /*publisher.publishEvent(new MemberRegistrationApplicationEvent(this,savedMember));*/
+        return savedMember;
     }
     public Member updateMember(Member member){
         Member findMember = findVerifiedMember(member.getMemberId());
@@ -52,6 +67,8 @@ public class MemberService {
     public void deleteMember(long memberId){
         Member findMember = findVerifiedMember(memberId);
         findMember.setMemberStatus(Member.MemberStatus.MEMBER_QUIT);
+        // 멤버의 질문들 비활성화
+        findMember.disableQuestions();
         memberRepository.save(findMember);
     }
     public Member findVerifiedMember(long memberId){

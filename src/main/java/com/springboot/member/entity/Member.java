@@ -1,5 +1,6 @@
 package com.springboot.member.entity;
 
+import com.springboot.question.entity.Question;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,18 +30,36 @@ public class Member {
     @Column(nullable = false, unique = true, length = 13)
     private String phone;
 
+    @Column(nullable = false, length = 100)
+    private String password;
+
     @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
     private MemberStatus memberStatus = MemberStatus.MEMBER_ACTIVE;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(nullable = false)
-    private List<Role> roles = new ArrayList<>();
+    private List<String> roles = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<Question> questions = new ArrayList<>();
 
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(nullable = false, name = "LAST_MODIFIED_AT")
     private LocalDateTime modifiedAt = LocalDateTime.now();
+
+    public void addQuestion(Question question){
+        questions.add(question);
+        if(question.getMember() == null){
+            question.setMember(this);
+        }
+    }
+    public void disableQuestions(){
+        questions.stream()
+                .forEach(question -> question.setQuestionStatus(Question.QuestionStatus.QUESTION_DEACTIVATED));
+    }
 
     public enum MemberStatus{
         MEMBER_ACTIVE("활동 중"),
@@ -52,11 +71,5 @@ public class Member {
 
         MemberStatus(String description) {
         }
-    }
-
-    public enum Role{
-        USER,
-        ADMIN
-        ;
     }
 }

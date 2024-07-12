@@ -1,4 +1,4 @@
-package com.springboot.response;
+package com.springboot.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

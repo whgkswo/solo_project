@@ -1,5 +1,7 @@
 package com.springboot.question.dto;
 
+import com.springboot.answer.dto.AnswerDto;
+import com.springboot.answer.entity.Answer;
 import com.springboot.member.entity.Member;
 import com.springboot.question.entity.Question;
 import com.springboot.validator.NotSpace;
@@ -11,6 +13,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 public class QuestionDto {
     @Getter
@@ -56,6 +59,10 @@ public class QuestionDto {
         private String content;
         private Question.QuestionStatus questionStatus;
         private Question.Publicity publicity;
-        private long answerId;
+        private int views;
+        private int likes;
+        private AnswerDto.Response answer;
+        private LocalDateTime createdAt;
+        private LocalDateTime modifiedAt;
     }
 }

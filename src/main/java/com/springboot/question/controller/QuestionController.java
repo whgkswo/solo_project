@@ -1,19 +1,18 @@
 package com.springboot.question.controller;
 
-import com.springboot.exception.BusinessLogicException;
-import com.springboot.exception.ExceptionCode;
-import com.springboot.member.entity.Member;
 import com.springboot.member.repository.MemberRepository;
+import com.springboot.member.service.MemberService;
 import com.springboot.question.dto.QuestionDto;
 import com.springboot.question.entity.Question;
 import com.springboot.question.mapper.QuestionMapper;
 import com.springboot.question.service.QuestionService;
-import com.springboot.response.MultiResponseDto;
-import com.springboot.response.SingleResponseDto;
+import com.springboot.dto.MultiResponseDto;
+import com.springboot.dto.SingleResponseDto;
 import com.springboot.utils.UriCreator;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +20,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/questions")
@@ -29,21 +29,19 @@ public class QuestionController {
     private final String QUESTION_DEFAULT_URL = "/questions";
     private final QuestionService questionService;
     private final QuestionMapper mapper;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
-    public QuestionController(QuestionService questionService, QuestionMapper mapper, MemberRepository memberRepository) {
+    public QuestionController(QuestionService questionService, QuestionMapper mapper, MemberRepository memberRepository, MemberService memberService) {
         this.questionService = questionService;
         this.mapper = mapper;
-        this.memberRepository = memberRepository;
+        this.memberService = memberService;
     }
 
     @PostMapping
-    public ResponseEntity postQuestion(@Valid @RequestBody QuestionDto.Post questionPostDto){
-        // 작성자가 있는지 검사
-        if(!memberRepository.existsById(questionPostDto.getAuthorId())){
-            throw new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND);
-        }
-        Question question = questionService.createQuestion(mapper.questionPostDtoToQuestion(questionPostDto));
+    public ResponseEntity postQuestion(@Valid @RequestBody QuestionDto.Post questionPostDto,
+                                       Authentication authentication){
+        Question question = questionService.createQuestion(mapper.questionPostDtoToQuestion(questionPostDto), authentication);
+
         URI location = UriCreator.createUri(QUESTION_DEFAULT_URL, question.getQuestionId());
 
         return ResponseEntity.created(location).build();
@@ -52,26 +50,28 @@ public class QuestionController {
     @PatchMapping("/{question-id}")
     public ResponseEntity patchQuestion(
             @PathVariable("question-id") @Positive long questionId,
-            @Valid @RequestBody QuestionDto.Patch questionPatchDto
+            @Valid @RequestBody QuestionDto.Patch questionPatchDto,
+            Authentication authentication
     ){
         questionPatchDto.setQuestionId(questionId);
-        Question question = questionService.updateQuestion(mapper.questionPatchDtoToQuestion(questionPatchDto));
+        Question question = questionService.updateQuestion(mapper.questionPatchDtoToQuestion(questionPatchDto), authentication);
         return new ResponseEntity<>(
                 new SingleResponseDto<>(mapper.questionToQuestionResponseDto(question)), HttpStatus.OK);
     }
-    @GetMapping("{question-id}")
-    public ResponseEntity getMember(
-            @PathVariable("question-id") @Positive long questionId
+    @GetMapping("/{question-id}")
+    public ResponseEntity getQuestion(
+            @PathVariable("question-id") @Positive long questionId, Authentication authentication
     ){
-        Question question = questionService.findQuestion(questionId);
+        Question question = questionService.findQuestion(questionId, authentication);
         return new ResponseEntity(
                 new SingleResponseDto<>(mapper.questionToQuestionResponseDto(question)), HttpStatus.OK
         );
     }
     @GetMapping
-    public ResponseEntity getMembers(@Positive @RequestParam int page,
-                                     @Positive @RequestParam int size){
-        Page<Question> pageQuestions = questionService.findQuestions(page-1, size);
+    public ResponseEntity getQuestions(@Positive @RequestParam int page,
+                                       @Positive @RequestParam int size,
+                                       @RequestParam SortType sortType ){
+        Page<Question> pageQuestions = questionService.findQuestions(page-1, size, sortType);
         List<Question> questions = pageQuestions.getContent();
 
         return new ResponseEntity(
@@ -80,9 +80,16 @@ public class QuestionController {
     }
     @DeleteMapping("/{question-id}")
     public ResponseEntity deleteQuestion(
-            @PathVariable("question-id") @Positive long questionId
+            @PathVariable("question-id") @Positive long questionId, Authentication authentication
     ){
-        questionService.deleteQuestion(questionId);
+        questionService.deleteQuestion(questionId, authentication);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+    public enum SortType{
+        VIEWS_ASCENDING,
+        VIEWS_DESCENDING,
+        LIKES_ASCENDING,
+        LIKES_DESCENDING
+        ;
     }
 }

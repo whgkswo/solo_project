@@ -1,6 +1,8 @@
 package com.springboot.member.dto;
 
 import com.springboot.member.entity.Member;
+import com.springboot.question.dto.QuestionDto;
+import com.springboot.question.entity.Question;
 import com.springboot.validator.NotSpace;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +11,7 @@ import lombok.Setter;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class MemberDto {
@@ -17,6 +20,9 @@ public class MemberDto {
         @NotBlank
         @Email
         private String email;
+
+        @NotBlank
+        private String password;
 
         @NotBlank(message = "이름은 공백이 아니어야 합니다.")
         private String name;
@@ -50,6 +56,9 @@ public class MemberDto {
         private String name;
         private String phone;
         private Member.MemberStatus memberStatus;
-        private List<Member.Role> roles;
+        private List<String> roles;
+        private List<QuestionDto.Response> questions;
+        private LocalDateTime createdAt;
+        private LocalDateTime modifiedAt;
     }
 }

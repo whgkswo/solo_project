@@ -4,12 +4,13 @@ import com.springboot.member.dto.MemberDto;
 import com.springboot.member.entity.Member;
 import com.springboot.member.mapper.MemberMapper;
 import com.springboot.member.service.MemberService;
-import com.springboot.response.MultiResponseDto;
-import com.springboot.response.SingleResponseDto;
+import com.springboot.dto.MultiResponseDto;
+import com.springboot.dto.SingleResponseDto;
 import com.springboot.utils.UriCreator;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,7 +67,7 @@ public class MemberController {
         Page<Member> pageMembers = memberService.findMembers(page-1, size);
         List<Member> members = pageMembers.getContent();
         return new ResponseEntity(
-                new MultiResponseDto<>(mapper.membersToMemberResponse(members), pageMembers), HttpStatus.OK
+                new MultiResponseDto<>(mapper.membersToMemberResponses(members), pageMembers), HttpStatus.OK
         );
     }
     @DeleteMapping("/{member-id}")
