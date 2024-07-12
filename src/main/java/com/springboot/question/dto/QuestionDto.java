@@ -18,10 +18,6 @@ import java.time.LocalDateTime;
 public class QuestionDto {
     @Getter
     public static class Post{
-        // TODO: 추후 인증,인가 구현 시 작성자는 그쪽에서 처리 요망
-        @NotNull(message = "작성자 ID는 필수입니다")
-        private long authorId;
-
         @NotSpace(message = "제목을 작성하세요")
         private String title;
 

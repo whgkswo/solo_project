@@ -42,8 +42,8 @@ public class QuestionService {
         if(roles.contains("ROLE_ADMIN")){
             throw new BusinessLogicException(ExceptionCode.FORBIDDEN);
         }
-        Member author = memberService.findVerifiedMember(question.getMember().getMemberId());
-        question.setMember(author);
+        Member member = memberService.findMember(authentication.getPrincipal().toString());
+        question.setMember(member);
         return questionRepository.save(question);
     }
 

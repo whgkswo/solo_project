@@ -61,6 +61,12 @@ public class MemberService {
     public Member findMember(long memberId){
         return findVerifiedMember(memberId);
     }
+    public Member findMember(String email){
+        Optional<Member> optionalMember = memberRepository.findByEmail(email);
+        Member findMember = optionalMember.orElseThrow(() ->
+                new BusinessLogicException(ExceptionCode.MEMBER_NOT_FOUND));
+        return findMember;
+    }
     public Page<Member> findMembers(int page, int size){
         return memberRepository.findAll(PageRequest.of(page, size, Sort.by("memberId").descending()));
     }

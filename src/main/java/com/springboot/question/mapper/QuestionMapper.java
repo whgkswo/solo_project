@@ -13,9 +13,6 @@ import java.util.List;
 public interface QuestionMapper {
     default Question questionPostDtoToQuestion(QuestionDto.Post requestBody){
         Question question = new Question();
-        Member author = new Member();
-        author.setMemberId(requestBody.getAuthorId());
-        question.setMember(author);
         question.setTitle(requestBody.getTitle());
         question.setContent(requestBody.getContent());
         question.setPublicity(requestBody.getPublicity());
