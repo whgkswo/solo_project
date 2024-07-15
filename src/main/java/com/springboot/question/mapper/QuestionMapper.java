@@ -39,7 +39,7 @@ public interface QuestionMapper {
                 question.getQuestionStatus(),
                 question.getPublicity(),
                 question.getViews(),
-                question.getLikes().size(),
+                question.getLikeCount(),
                 answerResponse,
                 question.getCreatedAt(),
                 question.getModifiedAt()

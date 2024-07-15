@@ -43,6 +43,9 @@ public class Question {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<Like> likes = new ArrayList<>();
 
+    @Column(nullable = false)
+    private int likeCount = 0;
+
     @OneToOne(cascade = CascadeType.PERSIST)
     private Answer answer;
 
@@ -51,6 +54,10 @@ public class Question {
 
     @Column(nullable = false, name = "LAST_MODIFIED_AT")
     LocalDateTime modifiedAt = LocalDateTime.now();
+
+    public void updateLikeCount(){
+        likeCount = likes.size();
+    }
 
     public void addLike(Like like){
         likes.add(like);

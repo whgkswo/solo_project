@@ -123,11 +123,19 @@ public class QuestionService {
                         .filter(question -> question.getQuestionStatus() != Question.QuestionStatus.QUESTION_DELETED)
                         .collect(Collectors.toList()));
             case "LIKES_ASCENDING":
-                return new PageImpl<>(questionRepository.findAll(PageRequest.of(page, size, Sort.by("likes").descending())).stream()
+                return new PageImpl<>(questionRepository.findAll(PageRequest.of(page, size, Sort.by("likeCount"))).stream()
                         .filter(question -> question.getQuestionStatus() != Question.QuestionStatus.QUESTION_DELETED)
                         .collect(Collectors.toList()));
             case "LIKES_DESCENDING":
-                return new PageImpl<>(questionRepository.findAll(PageRequest.of(page, size, Sort.by("likes"))).stream()
+                return new PageImpl<>(questionRepository.findAll(PageRequest.of(page, size, Sort.by("likeCount").descending())).stream()
+                        .filter(question -> question.getQuestionStatus() != Question.QuestionStatus.QUESTION_DELETED)
+                        .collect(Collectors.toList()));
+            case "LATEST" :
+                return new PageImpl<>(questionRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending())).stream()
+                        .filter(question -> question.getQuestionStatus() != Question.QuestionStatus.QUESTION_DELETED)
+                        .collect(Collectors.toList()));
+            case "OLDEST" :
+                return new PageImpl<>(questionRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt"))).stream()
                         .filter(question -> question.getQuestionStatus() != Question.QuestionStatus.QUESTION_DELETED)
                         .collect(Collectors.toList()));
             default:
